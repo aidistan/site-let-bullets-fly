@@ -1,4 +1,4 @@
-# Site: Let Bullets Fly
+# Let Bullets Fly
 
 > A Vue.js project
 
