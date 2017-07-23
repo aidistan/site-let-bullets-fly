@@ -23,9 +23,23 @@
 
     <footer class="am-footer am-footer-default">
       <div class="am-footer-miscs ">
-        <div>Copyright &copy; 2017 <a href="http://aiditan.me" target="_blank">Aidi Tan</a>, All Rights Reserved.</div>
+        <div>Copyright &copy; 2017 <a href="http://aiditan.me" target="_blank">Aidi Stan</a>, All Rights Reserved.</div>
       </div>
     </footer>
+
+    <div class="am-modal am-modal-prompt" tabindex="-1" id="modal">
+      <div class="am-modal-dialog">
+        <div class="am-modal-hd">建立连接</div>
+        <div class="am-modal-bd">
+          请输入后端地址（如<code>localhost:3000</code>）
+          <input type="text" class="am-modal-prompt-input">
+        </div>
+        <div class="am-modal-footer">
+          <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+          <span class="am-modal-btn" data-am-modal-confirm>确认</span>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -51,13 +65,7 @@ export default {
     this.initD3()
   },
   mounted () {
-    setInterval(() => {
-      this.bullets.unshift({
-        id: this.bullets.length + 1,
-        bars: { Callback: Math.random(), Backend: Math.random(), Frontend: Math.random() }
-      })
-      this.plotBox()
-    }, 500)
+    this.showModal()
   },
   methods: {
     initD3 () {
@@ -416,6 +424,34 @@ export default {
           return [i, j]
         }
       }
+    },
+    showModal () {
+      global.$('#modal').modal({
+        relatedTarget: this,
+        closeViaDimmer: false,
+        onConfirm: (e) => {
+          global.io(e.data || 'localhost:3000').on('bullet', (bars) => {
+            this.bullets.unshift({
+              id: this.bullets.length + 1,
+              bars: bars
+            })
+            this.plotBox()
+          })
+        },
+        onCancel: (e) => {
+          setInterval(() => {
+            this.bullets.unshift({
+              id: this.bullets.length + 1,
+              bars: {
+                Callback: 0,
+                Backend: 0,
+                Frontend: 100 + 100 * Math.random()
+              }
+            })
+            this.plotBox()
+          }, 500)
+        }
+      })
     },
     showMore () {
       this.recent = this.recent < 100 ? 100 : 10
